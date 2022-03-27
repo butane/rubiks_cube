@@ -50,24 +50,81 @@ class CubeSolver implements ICubeSolver {
    */
   solve(): boolean {
     const MAX_STEP1_RETRY = 4;
+    const MAX_STEP6_RETRY = 2;
+    const MAX_STEP7_RETRY = 2;
+    const MAX_STEP8_RETRY = 2;
 
-    if (!this.#isStep3Complete()) {
-      if (!this.#isStep2Complete()) {
-        // Step 1
-        if (!this.#isStep1Complete()) {
-          for (let i = 0; i < MAX_STEP1_RETRY; i++) {
-            if (this.#step1()) break;
+    if (!this.#isStep8Complete()) {
+      if (!this.#isStep7Complete()) {
+        if (!this.#isStep6Complete()) {
+          if (!this.#isStep5Complete()) {
+            if (!this.#isStep4Complete()) {
+              if (!this.#isStep3Complete()) {
+                if (!this.#isStep2Complete()) {
+                  // Step 1
+                  if (!this.#isStep1Complete()) {
+                    for (let i = 0; i < MAX_STEP1_RETRY; i++) {
+                      if (this.#step1()) break;
+                    }
+                    if (!this.#isStep1Complete())
+                      throw new Error('Step 1 failed to complete');
+                  }
+
+                  // Step 2
+                  if (!this.#isStep2Complete()) {
+                    if (!this.#step2())
+                      throw new Error('Step 2 failed to complete');
+                  }
+                }
+
+                // Step 3
+                if (!this.#isStep3Complete()) {
+                  if (!this.#step3())
+                    throw new Error('Step 3 failed to complete');
+                }
+              }
+
+              // Step 4
+              if (!this.#isStep4Complete()) {
+                if (!this.#step4())
+                  throw new Error('Step 4 failed to complete');
+              }
+            }
+
+            // Step 5
+            if (!this.#isStep5Complete()) {
+              if (!this.#step5()) throw new Error('Step 5 failed to complete');
+            }
           }
-          if (!this.#isStep1Complete())
-            throw new Error('Step 1 failed to complete');
+
+          // Step 6
+          if (!this.#isStep6Complete()) {
+            for (let i = 0; i < MAX_STEP6_RETRY; i++) {
+              if (this.#step6()) break;
+            }
+            if (!this.#isStep6Complete())
+              throw new Error('Step 6 failed to complete');
+          }
         }
 
-        // Step 2
-        if (!this.#step2()) throw new Error('Step 2 failed to complete');
+        // Step 7
+        if (!this.#isStep7Complete()) {
+          for (let i = 0; i < MAX_STEP7_RETRY; i++) {
+            if (this.#step7()) break;
+          }
+          if (!this.#isStep7Complete())
+            throw new Error('Step 7 failed to complete');
+        }
       }
 
-      // Step 3
-      if (!this.#step3()) throw new Error('Step 3 failed to complete');
+      // Step 8
+      if (!this.#isStep8Complete()) {
+        for (let i = 0; i < MAX_STEP8_RETRY; i++) {
+          if (this.#step8()) break;
+        }
+        if (!this.#isStep8Complete())
+          throw new Error('Step 8 failed to complete');
+      }
     }
 
     return false;
@@ -376,6 +433,400 @@ class CubeSolver implements ICubeSolver {
       this.#cubeFaces['L'][8] === 'L' &&
       this.#cubeFaces['L'][5] === 'L' &&
       this.#cubeFaces['L'][2] === 'L'
+    );
+  }
+
+  // Solve Mid Layer
+  #step4(): boolean {
+    let checkForMore = false;
+    let foundEdgeCase = false;
+    do {
+      foundEdgeCase = false;
+      do {
+        checkForMore = false;
+        const positions: [
+          number,
+          ICubeFaceNames,
+          number,
+          ICubeFaceNames,
+          ICubeFaceNames
+        ][] = [
+          [1, 'F', 1, 'L', 'R'],
+          [5, 'L', 3, 'B', 'F'],
+          [7, 'B', 1, 'R', 'L'],
+          [3, 'R', 5, 'F', 'B'],
+        ];
+        for (let i = 0; i < 4; i++) {
+          positions.forEach((pos) => {
+            if (
+              this.#cubeFaces['U'][pos[0]] !== 'U' &&
+              this.#cubeFaces[pos[1]][pos[2]] === pos[1]
+            ) {
+              checkForMore = true;
+              if (this.#cubeFaces['U'][pos[0]] === pos[3]) {
+                this.#rotateFace('U', -1)
+                  .#rotateFace(pos[3], -1)
+                  .#rotateFace('U', -1)
+                  .#rotateFace(pos[3], 1)
+                  .#rotateFace('U', 1)
+                  .#rotateFace(pos[1], 1)
+                  .#rotateFace('U', 1)
+                  .#rotateFace(pos[1], -1)
+                  .#rotateFace('U', -1);
+              } else {
+                this.#rotateFace('U', 1)
+                  .#rotateFace(pos[4], 1)
+                  .#rotateFace('U', 1)
+                  .#rotateFace(pos[4], -1)
+                  .#rotateFace('U', -1)
+                  .#rotateFace(pos[1], -1)
+                  .#rotateFace('U', -1)
+                  .#rotateFace(pos[1], 1)
+                  .#rotateFace('U', 1);
+              }
+            }
+          });
+          this.#rotateFace('U', 1);
+        }
+      } while (checkForMore);
+      {
+        const positions: [
+          ICubeFaceNames,
+          number,
+          number,
+          ICubeFaceNames,
+          ICubeFaceNames
+        ][] = [
+          ['F', 3, 5, 'L', 'R'],
+          ['R', 1, 7, 'F', 'B'],
+          ['B', 3, 5, 'R', 'L'],
+          ['L', 7, 1, 'B', 'F'],
+        ];
+        positions.forEach((pos) => {
+          if (foundEdgeCase) return;
+          if (this.#cubeFaces[pos[0]][pos[1]] !== pos[0]) {
+            foundEdgeCase = true;
+            this.#rotateFace('U', -1)
+              .#rotateFace(pos[3], -1)
+              .#rotateFace('U', -1)
+              .#rotateFace(pos[3], 1)
+              .#rotateFace('U', 1)
+              .#rotateFace(pos[0], 1)
+              .#rotateFace('U', 1)
+              .#rotateFace(pos[0], -1)
+              .#rotateFace('U', -1);
+          } else if (this.#cubeFaces[pos[0]][pos[2]] !== pos[0]) {
+            foundEdgeCase = true;
+            this.#rotateFace('U', 1)
+              .#rotateFace(pos[4], 1)
+              .#rotateFace('U', 1)
+              .#rotateFace(pos[4], -1)
+              .#rotateFace('U', -1)
+              .#rotateFace(pos[0], -1)
+              .#rotateFace('U', -1)
+              .#rotateFace(pos[0], 1)
+              .#rotateFace('U', 1);
+          }
+        });
+      }
+    } while (foundEdgeCase);
+
+    return this.#isStep4Complete();
+  }
+
+  #isStep4Complete(): boolean {
+    return (
+      this.#isStep3Complete() &&
+      this.#cubeFaces['F'][3] === 'F' &&
+      this.#cubeFaces['F'][5] === 'F' &&
+      this.#cubeFaces['R'][1] === 'R' &&
+      this.#cubeFaces['R'][7] === 'R' &&
+      this.#cubeFaces['B'][3] === 'B' &&
+      this.#cubeFaces['B'][5] === 'B' &&
+      this.#cubeFaces['L'][7] === 'L' &&
+      this.#cubeFaces['L'][1] === 'L'
+    );
+  }
+
+  // Top face Cross
+  #step5(): boolean {
+    // No Top edge piece on top face
+    if (
+      this.#cubeFaces['U'][1] !== 'U' &&
+      this.#cubeFaces['U'][5] !== 'U' &&
+      this.#cubeFaces['U'][7] !== 'U' &&
+      this.#cubeFaces['U'][3] !== 'U'
+    ) {
+      this.#rotateFace('F', 1)
+        .#rotateFace('U', 1)
+        .#rotateFace('R', 1)
+        .#rotateFace('U', -1)
+        .#rotateFace('R', -1)
+        .#rotateFace('F', -1);
+    }
+
+    // Top Edge piece in a row on top face
+    {
+      let foundLine = false;
+      const positions: [number, number, ICubeFaceNames, ICubeFaceNames][] = [
+        [1, 7, 'F', 'R'],
+        [3, 5, 'R', 'B'],
+      ];
+      positions.forEach((pos) => {
+        if (foundLine) return;
+        if (
+          this.#cubeFaces['U'][pos[0]] === 'U' &&
+          this.#cubeFaces['U'][pos[1]] === 'U'
+        ) {
+          foundLine = true;
+          this.#rotateFace(pos[2], 1)
+            .#rotateFace('U', 1)
+            .#rotateFace(pos[3], 1)
+            .#rotateFace('U', -1)
+            .#rotateFace(pos[3], -1)
+            .#rotateFace(pos[2], -1);
+        }
+      });
+    }
+
+    // Adjacent Top Edge piece on top face
+    {
+      let foundAdjacent = false;
+      const positions: [number, number, ICubeFaceNames, ICubeFaceNames][] = [
+        [5, 7, 'F', 'R'],
+        [1, 5, 'R', 'B'],
+        [3, 1, 'B', 'L'],
+        [7, 3, 'L', 'F'],
+      ];
+      positions.forEach((pos) => {
+        if (foundAdjacent) return;
+        if (
+          this.#cubeFaces['U'][pos[0]] === 'U' &&
+          this.#cubeFaces['U'][pos[1]] === 'U'
+        ) {
+          foundAdjacent = true;
+          this.#rotateFace(pos[2], 1)
+            .#rotateFace('U', 1)
+            .#rotateFace(pos[3], 1)
+            .#rotateFace('U', -1)
+            .#rotateFace(pos[3], -1)
+            .#rotateFace(pos[2], -1);
+        }
+      });
+    }
+    return this.#isStep5Complete();
+  }
+
+  #isStep5Complete(): boolean {
+    return (
+      this.#isStep4Complete() &&
+      this.#cubeFaces['U'][1] === 'U' &&
+      this.#cubeFaces['U'][5] === 'U' &&
+      this.#cubeFaces['U'][7] === 'U' &&
+      this.#cubeFaces['U'][3] === 'U'
+    );
+  }
+
+  // Upper face
+  #step6(): boolean {
+    const countUpCorners = () => {
+      let count = 0;
+      if (this.#cubeFaces['U'][0] === 'U') count++;
+      if (this.#cubeFaces['U'][2] === 'U') count++;
+      if (this.#cubeFaces['U'][8] === 'U') count++;
+      if (this.#cubeFaces['U'][6] === 'U') count++;
+      return count;
+    };
+    if (countUpCorners() === 4) return true;
+    if (countUpCorners() === 3)
+      throw new Error('Cube Error: Invalid Cube position');
+    if (countUpCorners() === 0 || countUpCorners() === 2) {
+      do {
+        while (this.#cubeFaces['L'][0] !== 'U') {
+          this.#rotateFace('U', 1);
+        }
+        this.#rotateFace('R', 1)
+          .#rotateFace('U', 1)
+          .#rotateFace('R', -1)
+          .#rotateFace('U', 1)
+          .#rotateFace('R', 1)
+          .#rotateFace('U', 2)
+          .#rotateFace('R', -1);
+      } while (countUpCorners() !== 1);
+    }
+    if (countUpCorners() === 1) {
+      while (this.#cubeFaces['U'][2] !== 'U') {
+        this.#rotateFace('U', 1);
+      }
+      this.#rotateFace('R', 1)
+        .#rotateFace('U', 1)
+        .#rotateFace('R', -1)
+        .#rotateFace('U', 1)
+        .#rotateFace('R', 1)
+        .#rotateFace('U', 2)
+        .#rotateFace('R', -1);
+    }
+
+    return this.#isStep6Complete();
+  }
+
+  #isStep6Complete(): boolean {
+    return (
+      this.#isStep5Complete() &&
+      this.#cubeFaces['U'][0] === 'U' &&
+      this.#cubeFaces['U'][2] === 'U' &&
+      this.#cubeFaces['U'][8] === 'U' &&
+      this.#cubeFaces['U'][6] === 'U'
+    );
+  }
+
+  // Matching Pairs
+  #step7(): boolean {
+    if (
+      this.#cubeFaces['F'][0] !== this.#cubeFaces['F'][2] &&
+      this.#cubeFaces['R'][2] !== this.#cubeFaces['R'][8] &&
+      this.#cubeFaces['B'][0] !== this.#cubeFaces['B'][2] &&
+      this.#cubeFaces['L'][6] !== this.#cubeFaces['L'][0]
+    ) {
+      this.#rotateFace('L', -1)
+        .#rotateFace('U', 1)
+        .#rotateFace('R', 1)
+        .#rotateFace('U', -1)
+        .#rotateFace('L', 1)
+        .#rotateFace('U', 1)
+        .#rotateFace('U', 1)
+        .#rotateFace('R', -1)
+        .#rotateFace('U', 1)
+        .#rotateFace('R', 1)
+        .#rotateFace('U', 2)
+        .#rotateFace('R', -1);
+    }
+    if (this.#isStep7Complete()) return true;
+    while (this.#cubeFaces['L'][6] !== this.#cubeFaces['L'][0]) {
+      this.#rotateFace('U', 1);
+    }
+    this.#rotateFace('L', -1)
+      .#rotateFace('U', 1)
+      .#rotateFace('R', 1)
+      .#rotateFace('U', -1)
+      .#rotateFace('L', 1)
+      .#rotateFace('U', 1)
+      .#rotateFace('U', 1)
+      .#rotateFace('R', -1)
+      .#rotateFace('U', 1)
+      .#rotateFace('R', 1)
+      .#rotateFace('U', 2)
+      .#rotateFace('R', -1);
+
+    return this.#isStep7Complete();
+  }
+
+  #isStep7Complete(): boolean {
+    return (
+      this.#isStep6Complete() &&
+      this.#cubeFaces['F'][0] === this.#cubeFaces['F'][2] &&
+      this.#cubeFaces['R'][2] === this.#cubeFaces['R'][8] &&
+      this.#cubeFaces['B'][0] === this.#cubeFaces['B'][2] &&
+      this.#cubeFaces['L'][6] === this.#cubeFaces['L'][0]
+    );
+  }
+
+  // Final step
+  #step8(): boolean {
+    while (this.#cubeFaces['F'][0] !== 'F') {
+      this.#rotateFace('U', 1);
+    }
+    if (this.#isStep8Complete()) return true;
+    if (
+      this.#cubeFaces['F'][1] !== 'F' &&
+      this.#cubeFaces['R'][5] !== 'R' &&
+      this.#cubeFaces['B'][1] !== 'B' &&
+      this.#cubeFaces['L'][3] !== 'L'
+    ) {
+      this.#rotateFace('F', 2)
+        .#rotateFace('U', -1)
+        .#rotateFace('R', -1)
+        .#rotateFace('L', 1)
+        .#rotateFace('F', 2)
+        .#rotateFace('L', -1)
+        .#rotateFace('R', 1)
+        .#rotateFace('U', -1)
+        .#rotateFace('F', 2);
+    }
+
+    let solvedFace: ICubeFaceNames;
+    if (
+      this.#cubeFaces['B'][0] === 'B' &&
+      this.#cubeFaces['B'][1] === 'B' &&
+      this.#cubeFaces['B'][2] === 'B'
+    ) {
+      solvedFace = 'B';
+    } else if (
+      this.#cubeFaces['L'][6] === 'L' &&
+      this.#cubeFaces['L'][3] === 'L' &&
+      this.#cubeFaces['L'][0] === 'L'
+    ) {
+      solvedFace = 'L';
+    } else if (
+      this.#cubeFaces['F'][0] === 'F' &&
+      this.#cubeFaces['F'][1] === 'F' &&
+      this.#cubeFaces['F'][2] === 'F'
+    ) {
+      solvedFace = 'F';
+    } else if (
+      this.#cubeFaces['R'][2] === 'R' &&
+      this.#cubeFaces['R'][5] === 'R' &&
+      this.#cubeFaces['R'][8] === 'R'
+    ) {
+      solvedFace = 'R';
+    } else {
+      throw new Error('Cube Error: Invalid Cube position');
+    }
+
+    const oppFaceMap: { [key in ICubeFaceNames]: ICubeFaceNames } = {
+      F: 'B',
+      R: 'L',
+      B: 'F',
+      L: 'R',
+      U: 'D',
+      D: 'U',
+    };
+    const adjacentFaceMap: { [key in ICubeFaceNames]: ICubeFaceNames[] } = {
+      F: ['L', 'R'],
+      R: ['F', 'B'],
+      B: ['R', 'L'],
+      L: ['B', 'F'],
+      D: [],
+      U: [],
+    };
+
+    const oppFace = oppFaceMap[solvedFace];
+    const adjFace = adjacentFaceMap[oppFace];
+
+    this.#rotateFace(oppFace, 2)
+      .#rotateFace('U', -1)
+      .#rotateFace(adjFace[1], -1)
+      .#rotateFace(adjFace[0], 1)
+      .#rotateFace(oppFace, 2)
+      .#rotateFace(adjFace[0], -1)
+      .#rotateFace(adjFace[1], 1)
+      .#rotateFace('U', -1)
+      .#rotateFace(oppFace, 2);
+
+    return this.#isStep8Complete();
+  }
+
+  #isStep8Complete(): boolean {
+    return (
+      this.#isStep7Complete() &&
+      this.#cubeFaces['F'][0] === 'F' &&
+      this.#cubeFaces['F'][1] === 'F' &&
+      this.#cubeFaces['R'][2] === 'R' &&
+      this.#cubeFaces['R'][5] === 'R' &&
+      this.#cubeFaces['B'][0] === 'B' &&
+      this.#cubeFaces['B'][1] === 'B' &&
+      this.#cubeFaces['L'][6] === 'L' &&
+      this.#cubeFaces['L'][3] === 'L'
     );
   }
 }
