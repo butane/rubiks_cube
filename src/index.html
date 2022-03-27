@@ -19,6 +19,20 @@
       td {
         padding: 5px;
       }
+      #solution {
+        width: 100%;
+        float: left;
+      }
+      .sol_panel {
+        float: left;
+        padding: 10px;
+        border: 1px solid grey;
+      }
+      .sol_panel > div {
+        text-align: center;
+        padding-bottom: 10px;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
@@ -52,9 +66,11 @@
           <button onclick="cube.randomize(20); render();">Shuffle</button>
         </td>
         <td colspan="2" style="text-align: center">
-          <button disabled>Solve</button>
+          <button onclick="solveCube()">Solve</button>
         </td>
       </tr>
     </table>
+    <br /><br />
+    <div id="solution"></div>
   </body>
 </html>

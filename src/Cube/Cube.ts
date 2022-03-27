@@ -1,8 +1,9 @@
 import { IAdjacentFaceMap } from './types/IAdjacentFaceMap';
+import { ICube } from './types/ICube';
 import { ICubeFaceNames } from './types/ICubeFaceNames';
 import { ICubeFaces } from './types/ICubeFaces';
 
-class Cube {
+class Cube implements ICube {
   #faces: ICubeFaces;
   static #adjacentFaceMap: IAdjacentFaceMap = {
     F: [
@@ -154,7 +155,7 @@ class Cube {
     return Math.floor(Math.random() * (end - start + 1) + start);
   }
 
-  randomize(count: number): void {
+  randomize(count: number = 20): void {
     const faceNames: ICubeFaceNames[] = ['F', 'B', 'R', 'L', 'U', 'D'];
     for (let i = 0; i < count; i++) {
       this.#rotateFace(

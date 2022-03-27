@@ -11,4 +11,18 @@
       th,
       td {
         padding: 5px;
-      }</style><script defer="defer" src="bundle.js"></script></head><body><div id="cube"></div><br/><br/><table><tr><th>Clockwise</th><td><button onclick="cube.F(1); render();">Front</button></td><td><button onclick="cube.R(1); render();">Right</button></td><td><button onclick="cube.U(1); render();">Up</button></td><td><button onclick="cube.L(1); render();">Left</button></td><td><button onclick="cube.B(1); render();">Back</button></td><td><button onclick="cube.D(1); render();">Down</button></td></tr><tr><th>Counter Clockwise</th><td><button onclick="cube.F(-1); render();">Front</button></td><td><button onclick="cube.R(-1); render();">Right</button></td><td><button onclick="cube.U(-1); render();">Up</button></td><td><button onclick="cube.L(-1); render();">Left</button></td><td><button onclick="cube.B(-1); render();">Back</button></td><td><button onclick="cube.D(-1); render();">Down</button></td></tr><tr><th>Actions</th><td colspan="2" style="text-align: center"><button onclick="cube.reset(); render();">Reset</button></td><td colspan="2" style="text-align: center"><button onclick="cube.randomize(20); render();">Shuffle</button></td><td colspan="2" style="text-align: center"><button disabled="disabled">Solve</button></td></tr></table></body></html>
+      }
+      #solution {
+        width: 100%;
+        float: left;
+      }
+      .sol_panel {
+        float: left;
+        padding: 10px;
+        border: 1px solid grey;
+      }
+      .sol_panel > div {
+        text-align: center;
+        padding-bottom: 10px;
+        font-weight: bold;
+      }</style><script defer="defer" src="bundle.js"></script></head><body><div id="cube"></div><br/><br/><table><tr><th>Clockwise</th><td><button onclick="cube.F(1); render();">Front</button></td><td><button onclick="cube.R(1); render();">Right</button></td><td><button onclick="cube.U(1); render();">Up</button></td><td><button onclick="cube.L(1); render();">Left</button></td><td><button onclick="cube.B(1); render();">Back</button></td><td><button onclick="cube.D(1); render();">Down</button></td></tr><tr><th>Counter Clockwise</th><td><button onclick="cube.F(-1); render();">Front</button></td><td><button onclick="cube.R(-1); render();">Right</button></td><td><button onclick="cube.U(-1); render();">Up</button></td><td><button onclick="cube.L(-1); render();">Left</button></td><td><button onclick="cube.B(-1); render();">Back</button></td><td><button onclick="cube.D(-1); render();">Down</button></td></tr><tr><th>Actions</th><td colspan="2" style="text-align: center"><button onclick="cube.reset(); render();">Reset</button></td><td colspan="2" style="text-align: center"><button onclick="cube.randomize(20); render();">Shuffle</button></td><td colspan="2" style="text-align: center"><button onclick="solveCube()">Solve</button></td></tr></table><br/><br/><div id="solution"></div></body></html>

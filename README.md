@@ -12,6 +12,15 @@
 
 NOTE: After Step 1, you can directly jump to Step 4 since the repository include latest `dist`.
 
+## Cube Notation
+
+- F - Front
+- B - Back
+- R - Right
+- L - Left
+- U - Up
+- D - Down
+
 ## Cube Representations
 
 ![alt Cube Internal Representation](cube-internal-representation.svg)
