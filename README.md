@@ -1,3 +1,7 @@
+## Demo
+
+[Click Here](http://butane.github.io/rubiks_cube)
+
 ## Requirements
 
 - Node -> v14.17.2
